@@ -1,20 +1,22 @@
-import { Headphones, Server, Truck } from "lucide-react";
+import { Handshake, Truck, Warehouse } from "lucide-react";
 
 import { getMetricsBySection, generatedAt, type MetricSection } from "@/lib/metrics";
 import { MetricChartCard } from "@/components/metric-chart-card";
 import { ModeToggle } from "@/components/mode-toggle";
+import { PrintButton } from "@/components/print-button";
 import { BrandLogo } from "@/components/brand-logo";
 import { Separator } from "@/components/ui/separator";
 
-const SECTION_ICONS: Record<MetricSection, typeof Headphones> = {
-  Сервис: Headphones,
+const SECTION_ICONS: Record<MetricSection, typeof Handshake> = {
+  Сервис: Handshake,
   Логистика: Truck,
-  Инфраструктура: Server,
+  Инфраструктура: Warehouse,
 };
 
-function formatDate(iso: string) {
-  const [year, month, day] = iso.split("-");
-  return `${day}.${month}.${year}`;
+function formatDateTime(iso: string) {
+  const [datePart, timePart] = iso.split("T");
+  const [year, month, day] = datePart.split("-");
+  return `${day}.${month}.${year}, ${timePart} (UTC+3 Москва)`;
 }
 
 export default function Home() {
@@ -24,21 +26,21 @@ export default function Home() {
     <div className="relative flex min-h-full flex-1 flex-col bg-background">
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,var(--glow),transparent_55%)]"
+        className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,var(--glow),transparent_55%)] print:hidden"
       />
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10 opacity-[0.05] [background-image:linear-gradient(var(--foreground)_1px,transparent_1px),linear-gradient(90deg,var(--foreground)_1px,transparent_1px)] [background-size:48px_48px]"
+        className="pointer-events-none fixed inset-0 -z-10 opacity-[0.05] [background-image:linear-gradient(var(--foreground)_1px,transparent_1px),linear-gradient(90deg,var(--foreground)_1px,transparent_1px)] [background-size:48px_48px] print:hidden"
       />
 
       <header className="relative overflow-hidden border-b border-border/70">
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-[var(--glow)] blur-3xl"
+          className="pointer-events-none absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-[var(--glow)] blur-3xl print:hidden"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-20 right-1/5 h-64 w-64 rounded-full bg-[var(--glow)] opacity-70 blur-3xl"
+          className="pointer-events-none absolute -top-20 right-1/5 h-64 w-64 rounded-full bg-[var(--glow)] opacity-70 blur-3xl print:hidden"
         />
         <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
@@ -46,11 +48,10 @@ export default function Home() {
             <div className="hidden h-10 w-px bg-border sm:block" />
             <div>
               <h1 className="font-heading text-2xl font-semibold tracking-tight">
-                Control Tower Dashboard
+                Supply Chain Control Tower
               </h1>
               <p className="text-sm text-muted-foreground">
-                Ключевые показатели цепочки поставок — факт по месяцам
-                2024–2026 и цель на 2026 год
+                Динамика ключевых показателей ДУЦП БЕ Импорт
               </p>
             </div>
           </div>
@@ -60,9 +61,12 @@ export default function Home() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--chart-3)] opacity-75" />
                 <span className="relative inline-flex size-2 rounded-full bg-[var(--chart-3)]" />
               </span>
-              Обновлено {formatDate(generatedAt)}
+              Обновлено {formatDateTime(generatedAt)}
             </div>
-            <ModeToggle />
+            <div className="flex items-center gap-2 print:hidden">
+              <PrintButton />
+              <ModeToggle />
+            </div>
           </div>
         </div>
       </header>
@@ -82,7 +86,7 @@ export default function Home() {
                   </h2>
                   <Separator className="flex-1" />
                 </div>
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 [&:has(.chart-card:hover)>.chart-card:not(:hover)]:scale-[0.98] [&:has(.chart-card:hover)>.chart-card:not(:hover)]:opacity-50">
                   {metrics.map((metric) => (
                     <MetricChartCard key={metric.key} metric={metric} />
                   ))}
@@ -94,7 +98,9 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-border/70 px-6 py-6 text-center text-xs text-muted-foreground">
-        Control Tower Dashboard — демонстрационный прототип, данные mock
+        Демонстрационный прототип разработанный Андреем Сысенко. Значения
+        метрик, методология расчета — сгенерированы ClaudeCode и не
+        являются реальными.
       </footer>
     </div>
   );

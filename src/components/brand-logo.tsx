@@ -9,7 +9,7 @@ export function BrandLogo() {
         width={1786}
         height={500}
         priority
-        className="h-7 w-auto sm:h-8"
+        className="h-[32px] w-auto sm:h-[37px]"
       />
     </div>
   );

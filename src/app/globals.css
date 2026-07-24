@@ -75,6 +75,9 @@
   --grey-20: #e3e8e8;
   --grey-10: #f0f2f2;
   --grey-5: #f5f7f7;
+
+  --target-red: #c8250f;
+  --target-red-dark: #e8432b;
 }
 
 :root {
@@ -99,7 +102,7 @@
   --chart-1: var(--grey-40);
   --chart-2: var(--grey-70);
   --chart-3: var(--accent-x5-90);
-  --chart-4: var(--grey-60);
+  --chart-4: var(--target-red);
   --chart-5: var(--grey-30);
   --success: var(--accent-x5-100);
   --glow: rgba(58, 185, 24, 0.14);
@@ -136,7 +139,7 @@
   --chart-1: var(--grey-60);
   --chart-2: var(--grey-40);
   --chart-3: var(--accent-x5-90);
-  --chart-4: var(--grey-50);
+  --chart-4: var(--target-red-dark);
   --chart-5: var(--grey-30);
   --success: var(--accent-x5-60);
   --glow: rgba(58, 185, 24, 0.22);
@@ -165,5 +168,30 @@
   h3,
   .font-heading {
     font-family: var(--font-heading);
+  }
+}
+
+/* Печать: всегда светлая раскладка, независимо от активной темы на экране */
+@media print {
+  :root,
+  .dark {
+    --background: #ffffff;
+    --foreground: var(--grey-100);
+    --card: #ffffff;
+    --card-foreground: var(--grey-100);
+    --popover: #ffffff;
+    --popover-foreground: var(--grey-100);
+    --muted-foreground: var(--grey-60);
+    --border: var(--grey-20);
+    --chart-1: var(--grey-40);
+    --chart-2: var(--grey-70);
+    --chart-3: var(--accent-x5-90);
+    --chart-4: var(--target-red);
+    --success: var(--accent-x5-100);
+    --glow: transparent;
+  }
+
+  body {
+    background: #ffffff;
   }
 }

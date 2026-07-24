@@ -1,7 +1,6 @@
 "use client";
 
-import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import Link from "next/link";
 
 import {
   Card,
@@ -11,119 +10,87 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { cn } from "@/lib/utils";
-import type { MetricDefinition } from "@/lib/metrics";
-
-const chartConfig = {
-  "2024": { label: "2024", color: "var(--chart-1)" },
-  "2025": { label: "2025", color: "var(--chart-2)" },
-  "2026": { label: "2026", color: "var(--chart-3)" },
-  target: { label: "Цель 2026", color: "var(--chart-4)" },
-} satisfies ChartConfig;
-
-function formatValue(value: number, unit: string) {
-  const formatted = Number.isInteger(value)
-    ? value.toString()
-    : value.toFixed(1);
-  return unit === "%" ? `${formatted}%` : `${formatted} ${unit}`;
-}
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { Button } from "@/components/ui/button";
+import { MetricLineChart } from "@/components/metric-line-chart";
+import { TargetBadge } from "@/components/target-badge";
+import {
+  MONTH_NAMES_RU,
+  CURRENT_YEAR,
+  METRIC_CONTENT,
+  formatMetricValue,
+  type MetricDefinition,
+} from "@/lib/metrics";
 
 export function MetricChartCard({ metric }: { metric: MetricDefinition }) {
-  const priorYearSameMonth = metric.rows[metric.currentMonth - 1]["2025"];
-  const delta = metric.currentValue - priorYearSameMonth;
-  const improved = metric.higherIsBetter ? delta > 0 : delta < 0;
-  const deltaRounded = Math.round(Math.abs(delta) * 10) / 10;
+  const content = METRIC_CONTENT[metric.key];
+  const currentPeriodLabel = `${MONTH_NAMES_RU[metric.currentMonth - 1]} ${CURRENT_YEAR}`;
 
   return (
-    <Card>
+    <Card
+      className="chart-card origin-center transition-[transform,box-shadow,filter,opacity] duration-300 ease-out hover:z-20 hover:scale-125 hover:shadow-[0_0_0_2px_var(--chart-3),0_45px_90px_-20px_var(--glow)] hover:brightness-110 hover:contrast-105"
+    >
       <CardHeader className="gap-1">
-        <CardTitle className="text-base font-medium text-muted-foreground">
-          {metric.name}
+        <CardTitle className="text-[1.2rem] font-medium text-muted-foreground">
+          <HoverCard>
+            <HoverCardTrigger
+              delay={150}
+              closeDelay={100}
+              render={
+                <span className="cursor-default underline decoration-dotted decoration-current/40 underline-offset-4">
+                  {metric.name}
+                </span>
+              }
+            />
+            <HoverCardContent className="w-80">
+              <div className="flex flex-col gap-3">
+                <div>
+                  <p className="font-heading text-sm font-semibold text-popover-foreground">
+                    {metric.name}
+                  </p>
+                  <p className="mt-1.5 text-sm text-muted-foreground">
+                    {content.description}
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    nativeButton={false}
+                    render={<Link href={`/metrics/${metric.key}`}>Перейти к деталям</Link>}
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    nativeButton={false}
+                    render={
+                      <Link href={`/metrics/${metric.key}/methodology`}>
+                        Детализированная методология
+                      </Link>
+                    }
+                  />
+                </div>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
         </CardTitle>
-        <CardDescription className="flex items-baseline gap-2">
-          <span className="font-heading text-3xl font-semibold text-foreground [text-shadow:0_0_24px_var(--glow)]">
-            {formatValue(metric.currentValue, metric.unit)}
+        <CardDescription className="flex flex-col gap-1">
+          <span className="text-xs font-medium tracking-wide text-muted-foreground/80 uppercase">
+            {currentPeriodLabel}
           </span>
-          {deltaRounded > 0 && (
-            <span
-              className={cn(
-                "flex items-center gap-1 text-sm font-medium",
-                improved ? "text-success" : "text-destructive"
-              )}
-            >
-              {delta > 0 ? (
-                <TrendingUp className="size-3.5" />
-              ) : (
-                <TrendingDown className="size-3.5" />
-              )}
-              {formatValue(deltaRounded, metric.unit)} к 2025
+          <span className="flex items-baseline gap-2">
+            <span className="font-heading text-3xl font-semibold text-foreground [text-shadow:0_0_24px_var(--glow)]">
+              {formatMetricValue(metric.currentValue, metric.unit)}
             </span>
-          )}
+            <TargetBadge metric={metric} />
+          </span>
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="aspect-auto h-56 w-full">
-          <LineChart data={metric.rows} margin={{ left: 4, right: 4, top: 4 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              type="number"
-              domain={[1, 12]}
-              ticks={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              width={36}
-              tickFormatter={(value: number) =>
-                metric.unit === "%" ? `${value}` : `${value}`
-              }
-            />
-            <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
-            <Line
-              dataKey="2024"
-              stroke="var(--color-2024)"
-              strokeWidth={2}
-              dot={false}
-              connectNulls={false}
-            />
-            <Line
-              dataKey="2025"
-              stroke="var(--color-2025)"
-              strokeWidth={2}
-              dot={false}
-              connectNulls={false}
-            />
-            <Line
-              dataKey="2026"
-              stroke="var(--color-2026)"
-              strokeWidth={2.5}
-              dot={{ r: 4, fill: "var(--color-2026)", stroke: "var(--card)", strokeWidth: 2 }}
-              connectNulls={false}
-              className="drop-shadow-[0_0_6px_var(--chart-3)]"
-            />
-            <Line
-              dataKey="target"
-              stroke="var(--color-target)"
-              strokeWidth={2}
-              strokeDasharray="4 4"
-              dot={false}
-              connectNulls
-            />
-            <ChartLegend content={<ChartLegendContent />} />
-          </LineChart>
-        </ChartContainer>
+        <MetricLineChart metric={metric} />
       </CardContent>
     </Card>
   );

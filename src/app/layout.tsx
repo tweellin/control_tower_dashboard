@@ -25,8 +25,8 @@ const x5Sans = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Control Tower Dashboard",
-  description: "Аналитический дашборд для руководителя",
+  title: "Supply Chain Control Tower",
+  description: "Панель мониторинга цепочек поставок",
 };
 
 export default function RootLayout({
