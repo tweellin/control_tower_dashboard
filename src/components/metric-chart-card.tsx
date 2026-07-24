@@ -44,9 +44,11 @@ export function MetricChartCard({ metric }: { metric: MetricDefinition }) {
   return (
     <Card>
       <CardHeader className="gap-1">
-        <CardTitle className="text-base font-medium">{metric.name}</CardTitle>
+        <CardTitle className="text-base font-medium text-muted-foreground">
+          {metric.name}
+        </CardTitle>
         <CardDescription className="flex items-baseline gap-2">
-          <span className="text-2xl font-semibold text-foreground">
+          <span className="font-heading text-3xl font-semibold text-foreground [text-shadow:0_0_24px_var(--glow)]">
             {formatValue(metric.currentValue, metric.unit)}
           </span>
           {deltaRounded > 0 && (
@@ -106,9 +108,10 @@ export function MetricChartCard({ metric }: { metric: MetricDefinition }) {
             <Line
               dataKey="2026"
               stroke="var(--color-2026)"
-              strokeWidth={2}
-              dot={{ r: 3 }}
+              strokeWidth={2.5}
+              dot={{ r: 4, fill: "var(--color-2026)", stroke: "var(--card)", strokeWidth: 2 }}
               connectNulls={false}
+              className="drop-shadow-[0_0_6px_var(--chart-3)]"
             />
             <Line
               dataKey="target"
