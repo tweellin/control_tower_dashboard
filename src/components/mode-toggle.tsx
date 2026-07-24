@@ -10,6 +10,9 @@ export function ModeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
+  // Theme is unknown on the server; flip this once after hydration so the
+  // real icon only renders once we know the resolved theme client-side.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   React.useEffect(() => setMounted(true), []);
 
   if (!mounted) {
