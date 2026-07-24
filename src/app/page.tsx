@@ -53,6 +53,11 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">
                 Динамика ключевых показателей ДУЦП БЕ Импорт
               </p>
+              <p className="mt-1 text-xs text-muted-foreground/70">
+                Демонстрационный прототип разработанный Андреем Сысенко.
+                Значения метрик, методология расчета — сгенерированы
+                ClaudeCode и не являются реальными.
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
